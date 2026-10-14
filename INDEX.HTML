@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="JOBNEX - AI-powered Resume Analyzer. Instantly match your resume skills to any job description."/>
+  <title>JOBNEX — Resume Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="STYLE.CSS"/>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">JOB<span class="logo-accent">NEX</span></span>
+      </div>
+      <nav class="nav">
+        <a href="#analyzer" class="nav-link" id="nav-analyze">Analyze</a>
+        <a href="#history" class="nav-link" id="nav-history" onclick="loadHistory()">History</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-badge">✦ AI-Powered Skill Matching</div>
+    <h1 class="hero-title">
+      Match Your Resume<br/>
+      <span class="gradient-text">to Any Job</span>
+    </h1>
+    <p class="hero-subtitle">
+      Paste your resume and a job description — JOBNEX instantly shows which skills match,
+      what's missing, and how to improve your chances.
+    </p>
+    <a href="#analyzer" class="btn btn-primary hero-cta" id="hero-cta-btn">
+      Start Analyzing
+      <span class="btn-arrow">→</span>
+    </a>
+  </section>
+
+  <!-- ===== ANALYZER ===== -->
+  <section class="analyzer-section" id="analyzer">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Analyze Your Resume</h2>
+        <p class="section-subtitle">Fill in both fields and get your match score instantly</p>
+      </div>
+
+      <div class="analyzer-grid">
+        <!-- Resume Input -->
+        <div class="input-card" id="resume-card">
+          <div class="input-card-header">
+            <div class="input-card-icon">📄</div>
+            <div>
+              <h3 class="input-card-title">Your Resume</h3>
+              <p class="input-card-desc">Paste your resume text here</p>
+            </div>
+          </div>
+          <textarea
+            id="resume-input"
+            class="textarea"
+            placeholder="Paste your full resume here...&#10;&#10;Example:&#10;Experienced Python developer with 3 years of experience in FastAPI, SQL, Docker and React. Worked on building scalable REST APIs..."
+            rows="10"
+          ></textarea>
+          <div class="char-count" id="resume-count">0 characters</div>
+        </div>
+
+        <!-- Job Description Input -->
+        <div class="input-card" id="job-card">
+          <div class="input-card-header">
+            <div class="input-card-icon">💼</div>
+            <div>
+              <h3 class="input-card-title">Job Description</h3>
+              <p class="input-card-desc">Paste the job posting here</p>
+            </div>
+          </div>
+          <textarea
+            id="job-input"
+            class="textarea"
+            placeholder="Paste the job description here...&#10;&#10;Example:&#10;We are looking for a Python developer with experience in FastAPI, React, SQL databases and Docker containerization..."
+            rows="10"
+          ></textarea>
+          <div class="char-count" id="job-count">0 characters</div>
+        </div>
+      </div>
+
+      <!-- Analyze Button -->
+      <div class="analyze-btn-wrap">
+        <button class="btn btn-primary btn-large" id="analyze-btn" onclick="analyze()">
+          <span class="btn-icon">⚡</span>
+          <span id="btn-text">Analyze Now</span>
+        </button>
+        <p class="analyze-hint">Results are saved to your history automatically</p>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-box" id="error-box" style="display:none;">
+        <span class="error-icon">⚠️</span>
+        <span id="error-message"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RESULTS ===== -->
+  <section class="results-section" id="results-section" style="display:none;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Your Results</h2>
+        <div class="result-id-badge" id="result-id-badge"></div>
+      </div>
+
+      <!-- Score Card -->
+      <div class="score-card" id="score-card">
+        <div class="score-circle-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120" id="score-svg">
+            <circle class="score-ring-bg" cx="60" cy="60" r="50"/>
+            <circle class="score-ring-fill" cx="60" cy="60" r="50" id="score-ring-fill"/>
+          </svg>
+          <div class="score-number" id="score-number">0%</div>
+        </div>
+        <div class="score-info">
+          <h3 class="score-label" id="score-label">Calculating...</h3>
+          <p class="score-desc" id="score-desc"></p>
+        </div>
+      </div>
+
+      <!-- Skills Grid -->
+      <div class="skills-grid">
+        <!-- Matched Skills -->
+        <div class="skills-card matched-card" id="matched-card">
+          <div class="skills-card-header">
+            <span class="skills-card-icon">✅</span>
+            <h3 class="skills-card-title">Matched Skills</h3>
+            <span class="skills-badge" id="matched-count">0</span>
+          </div>
+          <div class="skills-list" id="matched-skills"></div>
+        </div>
+
+        <!-- Unmatched Skills -->
+        <div class="skills-card unmatched-card" id="unmatched-card">
+          <div class="skills-card-header">
+            <span class="skills-card-icon">❌</span>
+            <h3 class="skills-card-title">Missing Skills</h3>
+            <span class="skills-badge skills-badge-red" id="unmatched-count">0</span>
+          </div>
+          <div class="skills-list" id="unmatched-skills"></div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="skills-card suggestions-card" id="suggestions-card">
+          <div class="skills-card-header">
+            <span class="skills-card-icon">💡</span>
+            <h3 class="skills-card-title">Suggestions</h3>
+          </div>
+          <ul class="suggestions-list" id="suggestions-list"></ul>
+        </div>
+      </div>
+
+      <!-- Analyze Again -->
+      <div class="analyze-btn-wrap">
+        <button class="btn btn-secondary" id="analyze-again-btn" onclick="analyzeAgain()">
+          ↩ Analyze Another
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HISTORY ===== -->
+  <section class="history-section" id="history">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Analysis History</h2>
+        <p class="section-subtitle">All past analyses saved from MySQL database</p>
+        <button class="btn btn-outline" id="refresh-history-btn" onclick="loadHistory()">🔄 Refresh</button>
+      </div>
+      <div id="history-list" class="history-list">
+        <div class="history-empty" id="history-empty">
+          <div class="history-empty-icon">📭</div>
+          <p>No history yet. Run an analysis to see results here!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">JOB<span class="logo-accent">NEX</span></span>
+      </div>
+      <p class="footer-text">Powered by FastAPI + MySQL + Python</p>
+    </div>
+  </footer>
+
+  <script src="SCRIPT.JS"></script>
+</body>
+</html>
